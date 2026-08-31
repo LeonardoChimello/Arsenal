@@ -427,18 +427,10 @@
 <div id="toast" role="status" aria-live="polite">copied to clipboard</div>
 
 <script>
-const CATEGORY_LABELS = {
-  'recon': 'recon',
-  'enumeration': 'enumeration',
-  'exploitation': 'exploitation',
-  'privesc-linux': 'privesc · linux',
-  'privesc-windows': 'privesc · windows',
-  'active-directory': 'active directory',
-  'cloud-azure': 'cloud · azure',
-  'pivoting': 'pivoting',
-  'reporting': 'reporting'
-};
-const CATEGORY_ORDER = Object.keys(CATEGORY_LABELS);
+// Category labels and their order are loaded from the manifest
+// (data/categories.json), so adding a category never means editing this file.
+let CATEGORY_LABELS = {};
+let CATEGORY_ORDER = [];
 
 let DATA = [];
 let activeCategory = 'all';
@@ -453,12 +445,38 @@ const $filters = document.getElementById('filters');
 const $toast   = document.getElementById('toast');
 
 // ---------- Load data ----------
-fetch('data/commands.json')
+// A small manifest (data/categories.json) lists the categories, their display
+// labels and their order. Each category lives in its own data/<category>.json
+// file: an array of command objects with no "category" field, because the file
+// *is* the category. To add commands, edit one category file. To add a category,
+// add a line to the manifest and drop in a new file. This HTML stays untouched.
+fetch('data/categories.json')
   .then(r => {
-    if (!r.ok) throw new Error('HTTP ' + r.status);
+    if (!r.ok) throw new Error('categories.json HTTP ' + r.status);
     return r.json();
   })
-  .then(data => {
+  .then(manifest => {
+    const cats = (manifest && manifest.categories) || [];
+    CATEGORY_ORDER = cats.map(c => c.slug);
+    CATEGORY_LABELS = {};
+    cats.forEach(c => { CATEGORY_LABELS[c.slug] = c.label || c.slug; });
+    // Fetch every category file in parallel; a broken/missing one is skipped
+    // (logged) rather than taking the whole page down.
+    return Promise.all(cats.map(c =>
+      fetch('data/' + (c.file || (c.slug + '.json')))
+        .then(r => {
+          if (!r.ok) throw new Error('HTTP ' + r.status);
+          return r.json();
+        })
+        .then(items => items.map(it => ({ ...it, category: c.slug })))
+        .catch(err => {
+          console.warn('Skipping category "' + c.slug + '":', err);
+          return [];
+        })
+    ));
+  })
+  .then(groups => {
+    const data = groups.flat();
     DATA = data.map((d, i) => ({ ...d, _id: i, _blob: buildBlob(d) }));
     buildFilters();
     render();
@@ -466,7 +484,7 @@ fetch('data/commands.json')
   .catch(err => {
     $results.innerHTML =
       '<div class="empty show"><div class="face">~ load error ~</div>' +
-      '<p>Could not read <code>data/commands.json</code>. ' +
+      '<p>Could not read <code>data/categories.json</code>. ' +
       'If you opened this file directly, run a local server instead: ' +
       '<code>python3 -m http.server</code></p></div>';
     console.error(err);

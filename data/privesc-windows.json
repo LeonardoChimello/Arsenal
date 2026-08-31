@@ -1,0 +1,58 @@
+[
+  {
+    "tool": "winpeas",
+    "title": "Automated Windows enumeration",
+    "command": "winPEASx64.exe",
+    "description": "Windows counterpart to linpeas. Flags misconfigs, stored creds and weak services.",
+    "tags": [
+      "privilege escalation",
+      "windows",
+      "enumeration",
+      "peass"
+    ],
+    "output": "Highlighted findings across services, registry, creds and token privileges."
+  },
+  {
+    "tool": "whoami",
+    "title": "List token privileges",
+    "command": "whoami /priv",
+    "description": "Shows privileges on the current token. SeImpersonate opens the Potato attack family.",
+    "tags": [
+      "privilege escalation",
+      "windows",
+      "token",
+      "seimpersonate"
+    ],
+    "output": "Privilege list with state. Enabled SeImpersonate/SeAssignPrimaryToken are gold."
+  },
+  {
+    "tool": "wesng",
+    "title": "Map missing patches to CVEs",
+    "command": "python wes.py systeminfo.txt",
+    "description": "WES-NG parses `systeminfo` output and maps missing patches to known CVEs and available exploits. Save systeminfo to a file, then feed it in. https://github.com/bitsadmin/wesng",
+    "tags": [
+      "privilege escalation",
+      "windows",
+      "wesng",
+      "cve",
+      "patches",
+      "systeminfo"
+    ],
+    "output": "Applicable CVEs, missing KBs and possible exploits for the host."
+  },
+  {
+    "tool": "procmon",
+    "title": "Monitor process / file / registry",
+    "command": "Procmon.exe",
+    "description": "Sysinternals real-time monitor of file, registry and process/thread activity. For privesc, spot unquoted service paths, missing DLLs (hijack) and files a SYSTEM process touches. Filter to cut the noise.",
+    "tags": [
+      "privilege escalation",
+      "windows",
+      "procmon",
+      "sysinternals",
+      "dll hijack",
+      "monitoring"
+    ],
+    "output": "A live, filterable event stream revealing writable targets a privileged process uses."
+  }
+]

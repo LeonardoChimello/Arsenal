@@ -1,0 +1,71 @@
+[
+  {
+    "tool": "az cli",
+    "title": "Enumerate current context",
+    "command": "az account show && az ad signed-in-user show",
+    "description": "Confirms which subscription and identity your token maps to before you touch anything.",
+    "tags": [
+      "azure",
+      "cloud",
+      "enumeration",
+      "context",
+      "identity"
+    ],
+    "output": "Subscription, tenant and the signed-in user object, your starting blast radius."
+  },
+  {
+    "tool": "az cli",
+    "title": "List readable resources",
+    "command": "az resource list -o table",
+    "description": "Everything your identity can see in the subscription. Roles decide what appears.",
+    "tags": [
+      "azure",
+      "cloud",
+      "resources",
+      "enumeration"
+    ],
+    "output": "Resource names, groups and types you have at least Reader on."
+  },
+  {
+    "tool": "az cli",
+    "title": "Dump role assignments",
+    "command": "az role assignment list --all -o table",
+    "description": "Maps who has what across the subscription. Look for Owner/Contributor to abuse.",
+    "tags": [
+      "azure",
+      "cloud",
+      "rbac",
+      "roles",
+      "privilege escalation"
+    ],
+    "output": "Principal, role and scope rows, the RBAC map for privilege-escalation paths."
+  },
+  {
+    "tool": "roadrecon",
+    "title": "Entra ID (Azure AD) recon",
+    "command": "roadrecon auth -u <user> -p <pass> && roadrecon gather",
+    "description": "Pulls the full Entra ID directory into a local DB for offline analysis.",
+    "tags": [
+      "azure",
+      "entra id",
+      "azure ad",
+      "cloud",
+      "enumeration"
+    ],
+    "output": "A local database of users, groups, apps and roles to explore with roadrecon gui."
+  },
+  {
+    "tool": "azurehound",
+    "title": "Collect Azure attack paths",
+    "command": "azurehound -u <user> -p <pass> list -t <tenant-id> -o output.json",
+    "description": "BloodHound collector for Azure. Reveals paths across identities and resources.",
+    "tags": [
+      "azure",
+      "entra id",
+      "bloodhound",
+      "cloud",
+      "attack path"
+    ],
+    "output": "JSON for BloodHound to graph escalation paths through Azure RBAC and Entra roles."
+  }
+]

@@ -1,0 +1,238 @@
+[
+  {
+    "tool": "gobuster",
+    "title": "Directory brute force",
+    "command": "gobuster dir -u http://<target> -w /usr/share/wordlists/dirb/common.txt -t 50",
+    "description": "Discover hidden paths. Add -x php,txt,html to probe extensions.",
+    "tags": [
+      "web",
+      "directory",
+      "fuzzing",
+      "http",
+      "brute force"
+    ],
+    "output": "Paths with status codes (200, 301, 403). 403 often means it exists but is protected."
+  },
+  {
+    "tool": "gobuster",
+    "title": "Virtual host / subdomain discovery",
+    "command": "gobuster vhost -u http://<target> -w subdomains.txt --append-domain",
+    "description": "Finds virtual hosts served from the same IP. Set the domain in /etc/hosts first.",
+    "tags": [
+      "web",
+      "vhost",
+      "subdomain",
+      "http"
+    ],
+    "output": "Discovered vhosts that return a different response size than the baseline."
+  },
+  {
+    "tool": "ffuf",
+    "title": "Parameter fuzzing",
+    "command": "ffuf -u 'http://<target>/page?FUZZ=1' -w params.txt -fs 0",
+    "description": "Discover hidden GET parameters. -fs filters by response size to cut noise.",
+    "tags": [
+      "web",
+      "fuzzing",
+      "parameters",
+      "http"
+    ],
+    "output": "Parameter names that change the response, worth testing for injection."
+  },
+  {
+    "tool": "feroxbuster",
+    "title": "Recursive content discovery",
+    "command": "feroxbuster -u http://<target> -w /usr/share/seclists/Discovery/Web-Content/raft-medium-directories.txt",
+    "description": "Recursive by default, so it walks into directories it finds. Fast and thorough.",
+    "tags": [
+      "web",
+      "directory",
+      "recursive",
+      "http"
+    ],
+    "output": "Tree of discovered paths with status and size, recursing automatically."
+  },
+  {
+    "tool": "gobuster",
+    "title": "Directory brute force (follow redirects)",
+    "command": "gobuster dir -u https://<target>/ -w /usr/share/dirb/wordlists/big.txt -t 100 -e --no-error -r -o gobuster.txt",
+    "description": "Verbose dir brute with 100 threads: -e prints full URLs, --no-error hides errors, -r follows redirects, -o saves the results.",
+    "tags": [
+      "gobuster",
+      "web",
+      "directory",
+      "brute force",
+      "http",
+      "redirect"
+    ],
+    "output": "Full URLs with status codes, redirects followed automatically."
+  },
+  {
+    "tool": "enum4linux-ng",
+    "title": "SMB / Samba enumeration",
+    "command": "enum4linux-ng -A <target>",
+    "description": "All-in-one SMB enum: shares, users, groups, password policy, OS info.",
+    "tags": [
+      "smb",
+      "samba",
+      "windows",
+      "shares",
+      "users"
+    ],
+    "output": "Domain info, share list, user accounts and the password policy if readable."
+  },
+  {
+    "tool": "enum4linux",
+    "title": "Classic SMB enumeration",
+    "command": "enum4linux -a <target>",
+    "description": "The original all-in-one SMB/Samba enum. Use -U for users only, -S for shares only, -a for everything.",
+    "tags": [
+      "smb",
+      "samba",
+      "enumeration",
+      "windows",
+      "users",
+      "shares"
+    ],
+    "output": "Workgroup/domain info, user list, shares and password policy when readable."
+  },
+  {
+    "tool": "crackmapexec",
+    "title": "SMB share and access check",
+    "command": "crackmapexec smb <target> -u '' -p '' --shares",
+    "description": "Null-session share listing. Swap in creds to see what an account can reach.",
+    "tags": [
+      "smb",
+      "shares",
+      "null session",
+      "windows",
+      "cme"
+    ],
+    "output": "Shares with READ/WRITE flags per share for the supplied credentials."
+  },
+  {
+    "tool": "netexec",
+    "title": "Validate credentials across hosts",
+    "command": "nxc smb targets.txt -u '<user>' -p '<pass>' -d '<domain>'",
+    "description": "Modern crackmapexec successor (nxc). Sprays creds across a host list and flags where they work, (Pwn3d!) marks local admin.",
+    "tags": [
+      "netexec",
+      "nxc",
+      "smb",
+      "credentials",
+      "password spray",
+      "active directory"
+    ],
+    "output": "Per-host auth result; (Pwn3d!) means admin access, blank means valid but not admin."
+  },
+  {
+    "tool": "netexec",
+    "title": "List SMB shares",
+    "command": "nxc smb <target> -u '<user>' -p '<pass>' -d '<domain>' --shares",
+    "description": "Enumerate shares and your READ/WRITE access with the given account. Prefix with proxychains4 -q to run through a pivot.",
+    "tags": [
+      "netexec",
+      "nxc",
+      "smb",
+      "shares",
+      "enumeration"
+    ],
+    "output": "Share names with per-share READ/WRITE permissions."
+  },
+  {
+    "tool": "netexec",
+    "title": "Harvest credentials (SAM/LSA/LSASS)",
+    "command": "nxc smb <target> -u <user> -p '<pass>' --sam --lsa",
+    "description": "With admin creds, dump SAM hashes and LSA secrets (cached domain creds / DCC2). Add -M lsassy to pull logged-on plaintext from LSASS.",
+    "tags": [
+      "netexec",
+      "nxc",
+      "sam",
+      "lsa",
+      "lsassy",
+      "hashes",
+      "credentials",
+      "dump"
+    ],
+    "output": "Local NTLM hashes plus DCC2/mscash2 (hashcat mode 2100); lsassy can give cleartext."
+  },
+  {
+    "tool": "ldapsearch",
+    "title": "Anonymous LDAP dump",
+    "command": "ldapsearch -x -H ldap://<target> -b 'dc=domain,dc=local'",
+    "description": "Anonymous bind against a domain controller. Often leaks users and descriptions.",
+    "tags": [
+      "ldap",
+      "active directory",
+      "anonymous",
+      "domain"
+    ],
+    "output": "Directory objects. Check description fields for passwords left by admins."
+  },
+  {
+    "tool": "snmpwalk",
+    "title": "Enumerate users via OID",
+    "command": "snmpwalk -c public -v1 <target> 1.3.6.1.4.1.77.1.2.25",
+    "description": "Walk a specific OID (this one lists user accounts) over SNMP v1 with the default 'public' community.",
+    "tags": [
+      "snmp",
+      "enumeration",
+      "oid",
+      "users",
+      "udp"
+    ],
+    "output": "SNMP-exposed usernames when the community string is valid."
+  },
+  {
+    "tool": "snmpwalk",
+    "title": "Full SNMP walk",
+    "command": "snmpwalk -c public -v1 <target>",
+    "description": "Dump everything readable over SNMP. Install snmp-mibs-downloader so numeric OIDs translate to names.",
+    "tags": [
+      "snmp",
+      "enumeration",
+      "walk",
+      "udp"
+    ],
+    "output": "System info, processes, routes and network config, sometimes credentials."
+  },
+  {
+    "tool": "snmp-check",
+    "title": "Automated SNMP enumeration",
+    "command": "snmp-check <target> -c public",
+    "description": "Friendlier, structured SNMP enumeration. The 'manager'/'private' communities often allow writes.",
+    "tags": [
+      "snmp",
+      "enumeration",
+      "snmp-check"
+    ],
+    "output": "Organized report of system, network, users and running software."
+  },
+  {
+    "tool": "snmpset",
+    "title": "Write via manager community",
+    "command": "snmpset -c manager -v1 <target> SNMPv2-MIB::sysContact.0 s \"pentest\"",
+    "description": "Manager/private communities frequently allow writes. Change an SNMP value to prove impact, then read it back with snmpwalk.",
+    "tags": [
+      "snmp",
+      "write",
+      "manager",
+      "snmpset"
+    ],
+    "output": "Confirms the value changed, proof of write access over SNMP."
+  },
+  {
+    "tool": "onesixtyone",
+    "title": "Brute-force SNMP communities",
+    "command": "onesixtyone -c communities.txt <target>",
+    "description": "Fast scanner to find valid SNMP community strings from a list (seclists ships good ones under SNMP).",
+    "tags": [
+      "snmp",
+      "community",
+      "brute force",
+      "onesixtyone",
+      "udp"
+    ],
+    "output": "Valid community strings per host, feed them into snmpwalk/snmp-check."
+  }
+]

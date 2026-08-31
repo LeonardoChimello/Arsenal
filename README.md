@@ -28,7 +28,7 @@ Comment lines (starting with `#`) are shown for context but stripped automatical
 
 ## Running locally
 
-The page fetches `data/commands.json`, so it needs to be served over HTTP — opening `index.html` directly with `file://` will be blocked by the browser. Any static server works:
+The page fetches its JSON from `data/`, so it needs to be served over HTTP — opening `index.html` directly with `file://` will be blocked by the browser. Any static server works:
 
 ```bash
 python3 -m http.server
@@ -39,17 +39,16 @@ python3 -m http.server
 
 1. Push this repo to GitHub.
 2. Go to **Settings → Pages → Build and deployment**, set **Source** to **GitHub Actions**.
-3. Push to `main`. The included workflow (`.github/workflows/deploy.yml`) publishes automatically.
+3. Push to `main`. The included workflow (`.github/workflows/static.yml`) publishes the whole repo automatically.
 
 Your site goes live at `https://<username>.github.io/<repo>/`.
 
 ## Adding your own commands
 
-You never touch the HTML. Open `data/commands.json` and add an object:
+You never touch the HTML. Command data lives in `data/`, **split one file per category** so you only open the file you care about. Pick the category file — say `data/privesc-linux.json` — and append an object to its array:
 
 ```json
 {
-  "category": "privesc-linux",
   "tool": "pspy",
   "title": "Watch processes without root",
   "command": "./pspy64 -pf -i 1000",
@@ -59,11 +58,12 @@ You never touch the HTML. Open `data/commands.json` and add an object:
 }
 ```
 
+There is **no `category` field** — the file an object lives in *is* its category.
+
 ### Fields
 
 | Field | Purpose |
 |-------|---------|
-| `category` | Which section it lives under (see list below) |
 | `tool` | The binary or technique name, shown in amber |
 | `title` | Short description of what this specific invocation does |
 | `command` | The command itself. Use `\n` for multi-line; lines starting with `#` render as dim comments and are stripped on copy |
@@ -73,9 +73,17 @@ You never touch the HTML. Open `data/commands.json` and add an object:
 
 ### Categories
 
-`recon` · `enumeration` · `exploitation` · `privesc-linux` · `privesc-windows` · `active-directory` · `cloud-azure` · `pivoting` · `reporting`
+The category files, their labels and the order they render in are all listed in the manifest, `data/categories.json`:
 
-To add a new category, add one line to the `CATEGORY_LABELS` object near the top of the `<script>` in `index.html`. Everything else — the filter chip, the section header, the ordering — is generated automatically.
+`recon` · `enumeration` · `web` · `exploitation` · `password-attacks` · `credential-access` · `privesc-linux` · `privesc-windows` · `active-directory` · `cloud-azure` · `pivoting` · `reporting`
+
+To **add a new category**, add one line to `data/categories.json`:
+
+```json
+{ "slug": "sniffing", "label": "sniffing", "file": "sniffing.json" }
+```
+
+…then create `data/sniffing.json` containing `[]` (or your first command). The filter chip, section header and ordering are generated from the manifest — you still never touch `index.html`.
 
 ## OPSEC
 

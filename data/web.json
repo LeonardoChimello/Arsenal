@@ -1,0 +1,213 @@
+[
+  {
+    "tool": "burpsuite",
+    "title": "Intercepting web proxy",
+    "command": "burpsuite",
+    "description": "The core web-pentest proxy: intercept, view and edit every browser request, with Intruder for brute force, Repeater, Decoder and more. https://portswigger.net/burp",
+    "tags": [
+      "burp",
+      "proxy",
+      "web",
+      "intercept",
+      "repeater",
+      "intruder"
+    ],
+    "output": "A local proxy (127.0.0.1:8080) capturing and letting you tamper with HTTP(S) traffic."
+  },
+  {
+    "tool": "whatweb",
+    "title": "Fingerprint web technologies",
+    "command": "whatweb https://<target>",
+    "description": "Identifies the stack behind a site: server, CMS, frameworks, JS libraries and versions.",
+    "tags": [
+      "whatweb",
+      "web",
+      "fingerprint",
+      "technology",
+      "recon"
+    ],
+    "output": "Detected technologies and versions for the target URL."
+  },
+  {
+    "tool": "dirb",
+    "title": "Web content scanner",
+    "command": "dirb http://<target>/",
+    "description": "Dictionary-based scanner for hidden web objects and directories, analyzing each response. Simple default wordlist, good first pass.",
+    "tags": [
+      "dirb",
+      "web",
+      "directory",
+      "content discovery",
+      "brute force"
+    ],
+    "output": "Discovered paths with their status codes."
+  },
+  {
+    "tool": "wfuzz",
+    "title": "Web fuzzing (dirs / params)",
+    "command": "wfuzz -c -z file,/usr/share/wordlists/dirb/common.txt --hc 404 http://<target>/FUZZ",
+    "description": "Substitutes FUZZ anywhere in a request (path, params, headers, cookies); use FUZ2Z for a second marker. Hide noise with --hc/--hl/--hw/--hs (code/lines/words/string).",
+    "tags": [
+      "wfuzz",
+      "fuzzing",
+      "web",
+      "directory",
+      "parameters",
+      "brute force"
+    ],
+    "output": "Payloads that pass your filters: hidden paths, valid params or working creds."
+  },
+  {
+    "tool": "getJS",
+    "title": "Extract JavaScript files",
+    "command": "getJS --url https://<target>/ --complete",
+    "description": "Pulls every <script> src from a page; --complete prints full URLs. Install with go install github.com/003random/getJS@latest. Grep the JS for endpoints and secrets.",
+    "tags": [
+      "getjs",
+      "javascript",
+      "web",
+      "enumeration",
+      "endpoints"
+    ],
+    "output": "A list of JS file URLs to grep for endpoints, API keys and comments."
+  },
+  {
+    "tool": "html-tool",
+    "title": "Parse HTML comments / tags / attrs",
+    "command": "echo \"https://<target>\" | html-tool comments",
+    "description": "tomnomnom's HTML extractor: pull comments, tag contents (tags title|script) or attributes (attribs src href). Pipe a list of URLs in. Install with go install github.com/tomnomnom/hacks/html-tool@latest.",
+    "tags": [
+      "html-tool",
+      "web",
+      "comments",
+      "scraping",
+      "enumeration"
+    ],
+    "output": "Extracted comments/tags/attributes, often leaking paths, versions or dev notes."
+  },
+  {
+    "tool": "netcat",
+    "title": "Check allowed HTTP methods",
+    "command": "nc -v <target> 80 -C\n# then send:\n# OPTIONS / HTTP/1.0",
+    "description": "Raw TCP connect to a web port to hand-craft requests. Send an OPTIONS request to list allowed methods; PUT/DELETE hint at WebDAV or upload paths.",
+    "tags": [
+      "netcat",
+      "nc",
+      "http",
+      "methods",
+      "web",
+      "options"
+    ],
+    "output": "The server's Allow: header listing enabled methods."
+  },
+  {
+    "tool": "sqlmap",
+    "title": "Automated SQL injection",
+    "command": "sqlmap -u \"http://<target>/?p=1&forumaction=search\" --dbs",
+    "description": "Detects and exploits SQLi automatically; --dbs enumerates databases. Can dump tables/data and even run OS commands. Use -hh for the full help.",
+    "tags": [
+      "sqlmap",
+      "sql injection",
+      "sqli",
+      "web",
+      "database"
+    ],
+    "output": "Confirmed injection points and the list of databases; escalate with --tables/--dump."
+  },
+  {
+    "tool": "commix",
+    "title": "Automated command injection",
+    "command": "commix --url=\"http://<target>/system/\" --data=\"website=INJECT_HERE&button=\" --method=POST",
+    "description": "Detects and exploits OS command injection in web parameters. Mark the injection point with INJECT_HERE (or let it find one); --cookie passes a session.",
+    "tags": [
+      "commix",
+      "command injection",
+      "rce",
+      "web"
+    ],
+    "output": "Command execution / a shell on the target when a parameter is injectable."
+  },
+  {
+    "tool": "xsstrike",
+    "title": "Automated XSS testing",
+    "command": "python3 xsstrike.py -u \"https://<target>/page.php?p=d3v\"",
+    "description": "Smart XSS scanner with payload fuzzing, context analysis and WAF detection. https://github.com/s0md3v/XSStrike",
+    "tags": [
+      "xsstrike",
+      "xss",
+      "cross-site scripting",
+      "web"
+    ],
+    "output": "Reflected/DOM XSS findings with working payloads."
+  },
+  {
+    "tool": "wpscan",
+    "title": "WordPress vulnerability scan",
+    "command": "wpscan --url http://<target> --enumerate p",
+    "description": "Scans WordPress for vulnerable plugins, themes, versions and configs. --enumerate p enumerates plugins; add --api-token for CVE data.",
+    "tags": [
+      "wpscan",
+      "wordpress",
+      "cms",
+      "web",
+      "plugins"
+    ],
+    "output": "WordPress version, enumerated plugins and any known vulnerabilities."
+  },
+  {
+    "tool": "joomscan",
+    "title": "Joomla vulnerability scan",
+    "command": "joomscan -u http://<target>/",
+    "description": "Fingerprints the Joomla version and hunts known core/component vulnerabilities, plus extension/plugin enumeration.",
+    "tags": [
+      "joomscan",
+      "joomla",
+      "cms",
+      "web",
+      "vulnerability"
+    ],
+    "output": "Detected Joomla version, installed components and known weaknesses."
+  },
+  {
+    "tool": "davtest",
+    "title": "Test WebDAV upload / exec",
+    "command": "davtest -url http://<target>",
+    "description": "Probes a WebDAV server: which file types it lets you PUT and which of those it will execute, the path to a webshell.",
+    "tags": [
+      "davtest",
+      "webdav",
+      "upload",
+      "web",
+      "exploitation"
+    ],
+    "output": "Per-extension PUT/EXEC results; an executable type that uploads is your foothold."
+  },
+  {
+    "tool": "cadaver",
+    "title": "WebDAV client",
+    "command": "cadaver http://<target>/webdav/",
+    "description": "Command-line WebDAV client: put/get/edit/move/delete files on a writable share (e.g. drop a shell after davtest confirms an executable type).",
+    "tags": [
+      "cadaver",
+      "webdav",
+      "upload",
+      "client",
+      "web"
+    ],
+    "output": "An interactive dav:/> prompt to upload and manage files on the server."
+  },
+  {
+    "tool": "cookie-manager",
+    "title": "Firefox cookie editor",
+    "command": "https://addons.mozilla.org/firefox/addon/a-cookie-manager/",
+    "description": "Firefox extension to view, create, edit, delete and block cookies, handy for tampering with session/auth cookies during web tests.",
+    "tags": [
+      "cookie manager",
+      "cookies",
+      "firefox",
+      "web",
+      "session"
+    ],
+    "output": "Full control over stored cookies, edit a session value and replay the request."
+  }
+]

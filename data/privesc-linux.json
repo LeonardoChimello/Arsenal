@@ -1,0 +1,67 @@
+[
+  {
+    "tool": "linpeas",
+    "title": "Automated Linux enumeration",
+    "command": "curl -L https://github.com/peass-ng/PEASS-ng/releases/latest/download/linpeas.sh | sh",
+    "description": "Colour-coded local privesc checks. Red/yellow highlights are the highest-value findings.",
+    "tags": [
+      "privilege escalation",
+      "linux",
+      "enumeration",
+      "peass"
+    ],
+    "output": "Sections for SUID, cron, capabilities, creds. Focus on the 95%-probability hits."
+  },
+  {
+    "tool": "find",
+    "title": "Hunt SUID binaries",
+    "command": "find / -perm -4000 -type f 2>/dev/null",
+    "description": "Lists setuid binaries. Cross-reference anything unusual against GTFOBins.",
+    "tags": [
+      "suid",
+      "privilege escalation",
+      "linux",
+      "gtfobins"
+    ],
+    "output": "Full paths of SUID files. A non-standard one is often the escalation path."
+  },
+  {
+    "tool": "sudo",
+    "title": "Check sudo rights",
+    "command": "sudo -l",
+    "description": "Shows what the current user may run as another user. Match entries to GTFOBins.",
+    "tags": [
+      "sudo",
+      "privilege escalation",
+      "linux"
+    ],
+    "output": "Allowed commands. NOPASSWD entries and editors/interpreters are prime targets."
+  },
+  {
+    "tool": "getcap",
+    "title": "Find file capabilities",
+    "command": "getcap -r / 2>/dev/null",
+    "description": "Capabilities can grant privilege without SUID. cap_setuid on an interpreter is a win.",
+    "tags": [
+      "capabilities",
+      "privilege escalation",
+      "linux"
+    ],
+    "output": "Files with capabilities set. cap_setuid+ep is the one to look for."
+  },
+  {
+    "tool": "linux-exploit-suggester",
+    "title": "Suggest kernel exploits",
+    "command": "./les.sh",
+    "description": "Compares the running kernel/OS against known local privesc CVEs and suggests matching exploits. Download the .sh from the repo and run it on the target. https://github.com/The-Z-Labs/linux-exploit-suggester",
+    "tags": [
+      "privilege escalation",
+      "linux",
+      "kernel",
+      "cve",
+      "les",
+      "exploit suggester"
+    ],
+    "output": "A ranked list of candidate kernel exploits for this host."
+  }
+]

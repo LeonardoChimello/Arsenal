@@ -1,0 +1,15 @@
+[
+  {
+    "tool": "workflow",
+    "title": "Structure a finding",
+    "command": "Title | Severity (CVSS) | Affected asset | Steps to reproduce | Impact | Remediation | Evidence",
+    "description": "A repeatable skeleton for every finding so reports stay consistent and reviewable.",
+    "tags": [
+      "reporting",
+      "documentation",
+      "workflow",
+      "cvss"
+    ],
+    "output": "A finding a client can act on without a follow-up call for clarification."
+  }
+]

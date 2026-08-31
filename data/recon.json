@@ -1,0 +1,137 @@
+[
+  {
+    "tool": "nmap",
+    "title": "Fast top-1000 TCP scan",
+    "command": "nmap -sV -sC -oA scan/initial <target>",
+    "description": "Service/version detection plus default scripts. -oA saves grepable, normal and XML output at once.",
+    "tags": [
+      "port scan",
+      "tcp",
+      "services",
+      "enumeration"
+    ],
+    "output": "Open ports with service, version and any script hits (e.g. 22/tcp open ssh OpenSSH 8.9)."
+  },
+  {
+    "tool": "nmap",
+    "title": "Full TCP port sweep",
+    "command": "nmap -p- --min-rate 5000 -T4 -oA scan/allports <target>",
+    "description": "All 65535 ports quickly, then re-scan the open ones with -sV -sC for detail.",
+    "tags": [
+      "port scan",
+      "full",
+      "tcp",
+      "all ports"
+    ],
+    "output": "Complete list of open TCP ports. Feed these into a targeted second scan."
+  },
+  {
+    "tool": "nmap",
+    "title": "UDP top ports",
+    "command": "sudo nmap -sU --top-ports 100 -oA scan/udp <target>",
+    "description": "UDP is slow; scan only common ports. Watch for SNMP (161), DNS (53), IKE (500).",
+    "tags": [
+      "udp",
+      "snmp",
+      "dns"
+    ],
+    "output": "open|filtered results. Confirm interesting ones with a service-specific tool."
+  },
+  {
+    "tool": "rustscan",
+    "title": "Rapid port discovery into nmap",
+    "command": "rustscan -a <target> -- -sV -sC",
+    "description": "Very fast port discovery, then pipes into nmap for detail. Good when nmap -p- feels slow.",
+    "tags": [
+      "port scan",
+      "fast",
+      "rust"
+    ],
+    "output": "Same nmap detail output, reached far faster on responsive hosts."
+  },
+  {
+    "tool": "nmap",
+    "title": "WAF-safe decoy SYN scan",
+    "command": "nmap -D RND:20 --open -sS --top-ports 100 <target> -oN open-ports",
+    "description": "-D RND:20 sprays 20 random decoy source IPs to hide the real scanner from WAFs/blacklists. -sS SYN scan, --open shows only open ports.",
+    "tags": [
+      "nmap",
+      "decoy",
+      "waf",
+      "stealth",
+      "syn scan",
+      "port scan"
+    ],
+    "output": "Open ports only, with your real source address blended among 20 decoys."
+  },
+  {
+    "tool": "nmap",
+    "title": "Fast all-ports SYN scan",
+    "command": "nmap --open -sS -p- --min-rate 60000 <target> -oN allports",
+    "description": "No WAF/rate-limiting in the way? Blast all 65535 ports at 60k packets/s, then re-scan the open ones with -sV.",
+    "tags": [
+      "nmap",
+      "port scan",
+      "full",
+      "fast",
+      "syn"
+    ],
+    "output": "Every open TCP port, fast. Feed these into a targeted -sV scan."
+  },
+  {
+    "tool": "nmap",
+    "title": "Targeted service/version scan",
+    "command": "nmap --open -sV -p 80,21,443 <target> -oN open-ports-sV",
+    "description": "After finding open ports, probe just those to pin down the exact service and version running.",
+    "tags": [
+      "nmap",
+      "service",
+      "version",
+      "port scan"
+    ],
+    "output": "Service + version per port to match against known exploits."
+  },
+  {
+    "tool": "nmap",
+    "title": "NSE vulnerability script",
+    "command": "nmap -p21 --script ftp-vsftpd-backdoor.nse -Pn <target>",
+    "description": "Run an NSE script from /usr/share/nmap/scripts against a service; grep script.db to find scripts. Pass arguments with --script-args cmd=id.",
+    "tags": [
+      "nmap",
+      "nse",
+      "script",
+      "vulnerability",
+      "ftp"
+    ],
+    "output": "Script output, e.g. confirmation the vsftpd backdoor is exploitable."
+  },
+  {
+    "tool": "lynx",
+    "title": "Search-engine dorking for files",
+    "command": "lynx --dump \"https://www.bing.com/search?q=site:<target>+ext:pdf\" | grep \".pdf\" | cut -d \"=\" -f2",
+    "description": "Terminal browser that dumps a page as text, ideal for scraping search-engine results (site: + ext: dorks) to harvest exposed documents. Loop wget over the list, then read metadata with exiftool.",
+    "tags": [
+      "lynx",
+      "osint",
+      "dorking",
+      "google dork",
+      "recon",
+      "metadata"
+    ],
+    "output": "A list of document URLs from the results, ready to download and inspect."
+  },
+  {
+    "tool": "lynx",
+    "title": "Dump a web page as text",
+    "command": "lynx --dump \"https://<target>\"",
+    "description": "Render a page to plain text in the terminal, quick content review and link harvesting without a browser.",
+    "tags": [
+      "lynx",
+      "web",
+      "dump",
+      "recon",
+      "terminal browser"
+    ],
+    "output": "The page's visible text and links printed to stdout."
+  }
+]

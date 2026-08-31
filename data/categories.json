@@ -1,0 +1,64 @@
+{
+  "categories": [
+    {
+      "slug": "recon",
+      "label": "recon",
+      "file": "recon.json"
+    },
+    {
+      "slug": "enumeration",
+      "label": "enumeration",
+      "file": "enumeration.json"
+    },
+    {
+      "slug": "web",
+      "label": "web",
+      "file": "web.json"
+    },
+    {
+      "slug": "exploitation",
+      "label": "exploitation",
+      "file": "exploitation.json"
+    },
+    {
+      "slug": "password-attacks",
+      "label": "password attacks",
+      "file": "password-attacks.json"
+    },
+    {
+      "slug": "credential-access",
+      "label": "credential access",
+      "file": "credential-access.json"
+    },
+    {
+      "slug": "privesc-linux",
+      "label": "privesc · linux",
+      "file": "privesc-linux.json"
+    },
+    {
+      "slug": "privesc-windows",
+      "label": "privesc · windows",
+      "file": "privesc-windows.json"
+    },
+    {
+      "slug": "active-directory",
+      "label": "active directory",
+      "file": "active-directory.json"
+    },
+    {
+      "slug": "cloud-azure",
+      "label": "cloud · azure",
+      "file": "cloud-azure.json"
+    },
+    {
+      "slug": "pivoting",
+      "label": "pivoting",
+      "file": "pivoting.json"
+    },
+    {
+      "slug": "reporting",
+      "label": "reporting",
+      "file": "reporting.json"
+    }
+  ]
+}
