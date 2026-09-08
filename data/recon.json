@@ -133,5 +133,20 @@
       "terminal browser"
     ],
     "output": "The page's visible text and links printed to stdout."
+  },
+  {
+    "tool": "wafw00f",
+    "title": "Detect WebApplication Firewall",
+    "command": "wafw00f \"https://google.com\" -vvv",
+    "description": "Can detect if a website is using WAF and also detects which WAF is running.",
+    "tags": [
+      "wafw00f",
+      "web",
+      "waf",
+      "recon",
+      "WebApplicationFirewall",
+      "Terminal"
+    ],
+    "output": "Outputs the tests it taken and possible WAF's running."
   }
 ]
