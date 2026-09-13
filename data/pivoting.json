@@ -85,5 +85,35 @@
       "windows"
     ],
     "output": "A forwarded port bridging your host and the target's internal service."
+  },
+  {
+    "tool": "sshuttle",
+    "title": "Transparent VPN-like pivot over SSH",
+    "command": "sshuttle -r <user>@<pivot-ip>:<port> 10.10.150.0/24",
+    "description": "Turns any SSH access into a transparent tunnel, no proxychains needed. All TCP traffic to the target subnet is routed through the pivot as if you were on the network, so tools run natively with normal threading. Only needs Python on the pivot. TCP-only: ICMP won't pass, so use nmap -sT -Pn.",
+    "tags": [
+      "sshuttle",
+      "pivoting",
+      "tunnel",
+      "ssh",
+      "vpn",
+      "lateral movement"
+    ],
+    "output": "The target subnet reachable directly from your box; run curl, nmap, gobuster, etc. without a proxy prefix."
+  },
+  {
+    "tool": "sshuttle",
+    "title": "Pivot with DNS and multiple subnets",
+    "command": "sshuttle --dns -r <user>@<pivot-ip>:<port> 10.10.150.0/24 172.16.0.0/16 -x <pivot-ip>",
+    "description": "Routes several internal ranges at once and forwards DNS through the pivot (--dns) so internal hostnames resolve. -x excludes the pivot itself to avoid killing your SSH session. Add -v to debug what's being routed, or -N to auto-detect the remote subnets.",
+    "tags": [
+      "sshuttle",
+      "pivoting",
+      "tunnel",
+      "ssh",
+      "dns",
+      "lateral movement"
+    ],
+    "output": "Multiple internal subnets and their DNS names reachable transparently through one SSH pivot."
   }
 ]
